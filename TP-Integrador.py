@@ -120,7 +120,51 @@ def grafico_temp(diccionario_clima,años,columna_temp):
     plt.bar(años, height=promedios, color=colores)
     plt.show()
     
+"""
+PRE-CONDICION:recibe una lista vacia y una lista con los datos del archivo.
+POST-CONDICION: busca en el archivo csv las columnas que contienen el titulo Precipitation.
+                Devuelve una lista con el indice de las columnas encontradas.
+"""
+def columna_precipitacion(lista_clima ,columna_precip):
+    for i in range(len(lista_clima[0])):
+        cadena="Precipitation" in lista_clima[0][i]
+        if cadena == True:
+            columna_precip.append(i)
+    return columna_precip   
 
+"""
+PRE-CONDICION: recibe una lista vacia, el diccionario organizado por años, una lista con los años y una lista de los indices
+                de las columnas que contienen los datos de precipitacion.
+POST-CONDICION: devuelve una lista con el promedio de precipitaciones de los ultimos cinco años.
+"""
+def promedio_precipitacion(promedios_precipitacion,diccionario_clima,años,columna_precip):
+    suma = 0
+    promedio = 0
+    cont = 0
+    while cont < 5:
+        lista = diccionario_clima[años[cont]]
+        for i in range(len(lista)):
+            for j in range(len(columna_precip)):
+                suma += float(lista[i][columna_precip[j]])
+            promedio = suma/len(lista)
+        promedios_precipitacion.append(promedio)
+        suma = 0
+        promedio = 0
+        cont += 1
+    return promedios_precipitacion
+
+"""
+PRE-CONDICION: recibe el diccionario con los datos, la lista de los años y la lista con la ubicacion de los datos de precipitación.
+POST-CONDICION: crea un grafico, que se muestra en pantalla, con los promedios de precipitación.
+"""
+def grafico_prep(diccionario_clima,años,columna_precip):
+    promedios_precipitacion=[]
+    promedio_precipitacion(promedios_precipitacion,diccionario_clima,años,columna_precip)
+    print(promedio_precipitacion)
+    colores=["midnightblue","royalblue","lightsteelblue","cornflowerblue", "slategrey"]
+    plt.title("Promedio de Precipitaciones de los últimos cinco años.")
+    plt.bar(años, height=promedios_precipitacion, color=colores)
+    plt.show()
     
     
 import csv
@@ -131,14 +175,19 @@ def main():
     diccionario_clima = {}
     años = []
     columna_temp = []
-    
+    columna_precip = []
+
+
     cargar_archivo(lista_clima)
     columna_temperatura(columna_temp, lista_clima)
+    columna_precipitacion(lista_clima ,columna_precip)
     ubicacion_fecha = columna_fecha(lista_clima)
     define_años(lista_clima,ubicacion_fecha, años)
     diccionario_años(lista_clima,diccionario_clima, ubicacion_fecha, años)
     grafico_temp(diccionario_clima,años,columna_temp)
-    
+    grafico_prep(diccionario_clima,años,columna_precip)
+
+
 
 main()
 
