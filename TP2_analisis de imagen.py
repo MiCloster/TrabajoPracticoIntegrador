@@ -46,7 +46,7 @@ def declarar_alerta(colores_contados):
         return "Alerta: Tormenta débil"
     return "Sin alerta proxima"
     
-def main():
+def analisis_imagen():
     try:
         im = Image.open("imagen_a_analizar.png")
         im = im.convert("RGB")
@@ -57,6 +57,3 @@ def main():
             print(alerta, "en", i)
     except:
         print("No exsiste imagen imagen_a_analizar.png en la misma carpeta que el archivo .py")
-main()
-
-
