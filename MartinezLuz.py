@@ -1,7 +1,6 @@
 import requests
 from datetime import date
 from datetime import timedelta
-#import geocoder
 
 def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
     for tiempo in range(len(datos)):
@@ -12,6 +11,10 @@ def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ci
             print(f"Tiempo a la tarde: {datos[tiempo]['weather']['afternoon_desc']}")
             
 def fecha_amigable(fecha):
+    """ Cambia el formato de la fecha, para que sea más amigable con el usuario
+    pre: recibe una fecha en formato dd- mm- aaaa
+    post: devuelve un string con el formate de fecha dia de mes del año
+    """
     meses = ("Enero", "Febrero", "Marzo", "Abri", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
     dia = fecha.day
     mes = meses[fecha.month - 1]
@@ -19,6 +22,8 @@ def fecha_amigable(fecha):
     print(f"{dia} de {mes} del {año}")
 
 def pronostico_extendido():
+    """ Determina el pronostico de los proximos tres días
+    """
     pronosticos_extendidos_1 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/1')
     pronosticos_extendidos_2 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/2')
     pronosticos_extendidos_3 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/3')
@@ -63,6 +68,8 @@ def pronostico_extendido():
     mostrar_pronostico (datos_3, provincias, opcion_provincia, ciudades, opcion_ciudad)
     
 def alertas_actuales():
+    """Determina las alertas a nivel nacional
+    """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     for alerta in range(len(datos)):
@@ -75,18 +82,23 @@ def alertas_actuales():
         print("---------------------------------------------------------")
     
 def alertas_actuales_por_usuario():
+    """ Determina las alertas cercanas o en la provincia ingresada por el usuario
+    """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
-    zona_ingresada = input("Ingresar provincia: ")
+    zona_ingresada = (input("Ingresar provincia: ")).capitalize()
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
             if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
                 cont += 1
                 print (f"{datos[alerta]['title']}: {datos[alerta]['description']}")
+                print()
+                print("Zonas")
                 for zona in datos[alerta]['zones']:
                     print(datos[alerta]['zones'][zona])
                 print("---------------------------------------------------------")
     if cont == 0:
         print()
         print("No existen alertas para esa zona")
+        
