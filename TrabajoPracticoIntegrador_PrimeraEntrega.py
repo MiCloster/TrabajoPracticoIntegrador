@@ -4,6 +4,7 @@ from datetime import timedelta
 
 def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
     """Muestra en pantalla el pronostico de la ciudad ingresada
+    PRE: datos de la pagina SNM, lista con las provincias y ciudades, opciones legidas por el usuario
     """
     for tiempo in range(len(datos)):
         if datos[tiempo]['name'] == ciudades[opcion_ciudad] and datos[tiempo]['province'] == provincias[opcion_provincia]:
