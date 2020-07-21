@@ -57,7 +57,6 @@ def diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha):
     cuarto_año = []
     quinto_año = []
     
-    
     for i in range(len(lista_clima)):
         for j in range(len(años)):
             busqueda = años[j] in lista_clima[i][ubicacion_fecha]
@@ -109,11 +108,10 @@ def promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha):
     diccionario_años(lista_clima, diccionario_clima,años, ubicacion_fecha)
     
     while cont < 5:
-        lista=diccionario_clima[años[cont]]
-        for i in range(len(lista)):
+        for i in range(len(diccionario_clima[años[cont]])):
             for j in range(len(columna_temp)):
-                suma+=float(lista[i][columna_temp[j]])
-            promedio=suma/len(lista)
+                suma+=float(diccionario_clima[años[cont]][i][columna_temp[j]])
+            promedio=suma/len(diccionario_clima[años[cont]])
         promedios.append(promedio)
         suma = 0
         promedio = 0
@@ -162,11 +160,10 @@ def promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha
     diccionario_años(lista_clima, diccionario_clima,años, ubicacion_fecha)
     columna_precip=columna_precipitacion(lista_clima)
     while cont < 5:
-        lista = diccionario_clima[años[cont]]
-        for i in range(len(lista)):
+        for i in range(len(diccionario_clima[años[cont]])):
             for j in range(len(columna_precip)):
-                suma += float(lista[i][columna_precip[j]])
-            promedio = suma/len(lista)
+                suma += float(diccionario_clima[años[cont]][i][columna_precip[j]])
+            promedio = suma/len(diccionario_clima[años[cont]])
         promedios_precip.append(promedio)
         suma = 0
         promedio = 0
