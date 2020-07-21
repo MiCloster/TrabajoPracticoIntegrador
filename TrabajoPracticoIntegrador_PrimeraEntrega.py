@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 import csv
 import matplotlib.pyplot as plt
-=======
-<<<<<<< HEAD
 import requests
 from datetime import date
 from datetime import timedelta
+from PIL import Image
 
 def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
     for tiempo in range(len(datos)):
@@ -106,10 +104,6 @@ def alertas_actuales_por_usuario():
     if cont == 0:
         print()
         print("No existen alertas para esa zona")
-        
-=======
->>>>>>> 0a27aa76d92e8034290710720902349f10fb8e6f
-from PIL import Image
 
 def suma_colores(im,CIUDAD):
     """ Determina la cantidad de pixeles del mismo color en un rango determinado
@@ -168,7 +162,7 @@ def analisis_imagen():
             print(alerta, "en", i)
     except:
         print("No exsiste imagen imagen_a_analizar.png en la misma carpeta que el archivo .py")
-<<<<<<< HEAD
+
 
 """
 PRE-CONDICION: recibe una lista vacia.
@@ -424,15 +418,9 @@ def menu():
             analisis_imagen()
            
 def main():
-   menu()
-       
-        
+   menu()     
 main()
 
 
 
 
-
-=======
->>>>>>> bfdefbe752d05f4375008f983d9e98c1fffc44cc
->>>>>>> 0a27aa76d92e8034290710720902349f10fb8e6f
