@@ -109,7 +109,6 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
                 print("---------------------------------------------------------")
     if cont == 0:
         print()
-<<<<<<< HEAD
         print("No existen alertas para esa zona")
 
 def suma_colores(im,CIUDAD):
@@ -427,10 +426,3 @@ def menu():
 def main():
    menu()     
 main()
-
-
-
-
-=======
-        print("No existen alertas para esa zona")
->>>>>>> MartinezLuz
