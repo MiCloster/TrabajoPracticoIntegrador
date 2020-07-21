@@ -6,6 +6,9 @@ from datetime import timedelta
 from PIL import Image
 
 def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
+    """Muestra en pantalla el pronostico de la ciudad ingresada
+    PRE: datos de la pagina SNM, lista con las provincias y ciudades, opciones legidas por el usuario
+    """
     for tiempo in range(len(datos)):
         if datos[tiempo]['name'] == ciudades[opcion_ciudad] and datos[tiempo]['province'] == provincias[opcion_provincia]:
             print(f"Temperatura a la mañana: {datos[tiempo]['weather']['morning_temp']}°C")
@@ -16,7 +19,7 @@ def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ci
 def fecha_amigable(fecha):
     """ Cambia el formato de la fecha, para que sea más amigable con el usuario
     pre: recibe una fecha en formato dd- mm- aaaa
-    post: devuelve un string con el formate de fecha dia de mes del año
+    Muestra en pantalla un string con el formate de fecha dia de mes del año
     """
     meses = ("Enero", "Febrero", "Marzo", "Abri", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
     dia = fecha.day
@@ -69,6 +72,7 @@ def pronostico_extendido():
     print()
     fecha_amigable(despues_de_mañana)
     mostrar_pronostico (datos_3, provincias, opcion_provincia, ciudades, opcion_ciudad)
+    alertas_actuales_por_usuario(2, provincias[opcion_provincia])
     
 def alertas_actuales():
     """Determina las alertas a nivel nacional
@@ -84,13 +88,15 @@ def alertas_actuales():
             print(datos[alerta]['zones'][zona])
         print("---------------------------------------------------------")
     
-def alertas_actuales_por_usuario():
+def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
     """ Determina las alertas cercanas o en la provincia ingresada por el usuario
+    PRE: recibe la opcion si necesita que ingrese la zona o no
     """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
-    zona_ingresada = (input("Ingresar provincia: ")).capitalize()
+    if opcion == 1
+        zona_ingresada = (input("Ingresar provincia: ")).capitalize()
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
             if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
@@ -103,6 +109,7 @@ def alertas_actuales_por_usuario():
                 print("---------------------------------------------------------")
     if cont == 0:
         print()
+<<<<<<< HEAD
         print("No existen alertas para esa zona")
 
 def suma_colores(im,CIUDAD):
@@ -424,3 +431,6 @@ main()
 
 
 
+=======
+        print("No existen alertas para esa zona")
+>>>>>>> MartinezLuz
