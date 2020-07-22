@@ -95,7 +95,7 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
-    if opcion == 1
+    if opcion == 1:
         zona_ingresada = (input("Ingresar provincia: ")).capitalize()
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
@@ -167,14 +167,14 @@ def analisis_imagen():
             alerta = declarar_alerta(colores_contados)
             print(alerta, "en", i)
     except:
-        print("No exsiste imagen imagen_a_analizar.png en la misma carpeta que el archivo .py")
+        print("No existe imagen imagen_a_analizar.png en la misma carpeta que el archivo .py")
 
 
-"""
-PRE-CONDICION: recibe una lista vacia.
-POST-CONDICION: devuelve una lista con los datos del archivo csv.
-"""
 def cargar_archivo(lista_clima):
+    """
+    PRE-CONDICION: recibe una lista vacia.
+    POST-CONDICION: devuelve una lista con los datos del archivo csv.
+    """
     opc = input("¿Desea agregar un archivo csv? Si la respuesta es no, se usara un archivo predeterminado. (SI/NO) \nRespuesta: ").upper()
     while opc != 'SI' and opc != 'NO':
         opc = input("Respuesta inválida. Reingrese su respuesta: ").upper()
@@ -190,39 +190,44 @@ def cargar_archivo(lista_clima):
            lista_clima.append(filas)
     return lista_clima
 
-
-"""
-PRE-CONDICION: recibe los datos del archivo csv.
-POST-CONDICION: devuelve la ubicacion de la columna donde estan los años.
-"""
 def columna_fecha(lista_clima):
+    """
+    PRE-CONDICION: recibe los datos del archivo csv.
+    POST-CONDICION: devuelve la ubicacion de la columna donde estan los años.
+    """
     ubicacion_fecha = []
     ubicacion_fecha = lista_clima[0].index("Date")
     return ubicacion_fecha
 
-
-"""
-PRE-CONDICIONES: recibe la lista con los datos del archivo csv y el indice de la fechas. 
-POST-CONDICIONES: devuelve una lista con los ultimos cinco años.
-"""
 def define_años(lista_clima, años, ubicacion_fecha):
+    """
+    PRE-CONDICIONES: recibe la lista con los datos del archivo csv y el indice de la fechas.
+                    Se espera recibir las fechas en formato dd/mm/aa.
+    POST-CONDICIONES: devuelve una lista con los ultimos cinco años.
+    """
     lista_años = []
     for i in range(len(lista_clima)-1):
         lista_años.append(lista_clima[i+1][ubicacion_fecha].split('/'))
         
     for i in range(len(lista_clima)-1):
-        chequeo = lista_años[i][2] in años
-        if  (chequeo == False) and (len(años) < 5):
-            años.append(lista_años[i][2])       
+        chequeo = int(lista_años[i][2]) in años
+        if  (chequeo == False):
+            años.append(int(lista_años[i][2]))
+    
+    años.sort()
+    while len(años) > 5:
+        año_menor=años.index(min(años))
+        años.pop(año_menor)
     return años
 
-"""
-PRE-CONDICION: recibe un diccionario vacio, los datos del archivo csv, el indice de la columna de la fecha y una lista con los años.
-POST-CONDICION: crea cinco listas con la informacion de cada año, las cuales seran los valores del diccionario.
-                Las claves del diccionario son los años correspondientes.
-                Devuelve un diccionario con la informacion.
-"""
 def diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha):
+    """
+    PRE-CONDICION: recibe un diccionario vacio, los datos del archivo csv, el indice de la columna de la fecha y una lista con los años
+                    Solo recibe hasta cinco años.
+    POST-CONDICION: crea cinco listas con la informacion de cada año, las cuales seran los valores del diccionario.
+                    Las claves del diccionario son los años correspondientes.
+                    Devuelve un diccionario con la informacion.
+    """
     primer_año = []
     segundo_año = []
     tercer_año = []
@@ -231,7 +236,7 @@ def diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha):
     
     for i in range(len(lista_clima)):
         for j in range(len(años)):
-            busqueda = años[j] in lista_clima[i][ubicacion_fecha]
+            busqueda = str(años[j]) in lista_clima[i][ubicacion_fecha]
             if (j == 0) and (busqueda == True):
                 primer_año.append(lista_clima[i])
             elif (j == 1) and (busqueda == True):
@@ -243,20 +248,25 @@ def diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha):
             elif (j == 4) and (busqueda == True):
                 quinto_año.append(lista_clima[i])
     
+    
     diccionario_clima[años[0]] = primer_año
-    diccionario_clima[años[1]] = segundo_año
-    diccionario_clima[años[2]] = tercer_año
-    diccionario_clima[años[3]] = cuarto_año
-    diccionario_clima[años[4]] = quinto_año
+    if len(años)>=2:
+        diccionario_clima[años[1]] = segundo_año
+    if len(años)>=3:
+        diccionario_clima[años[2]] = tercer_año
+    if len(años)>=4:
+        diccionario_clima[años[3]] = cuarto_año
+    if len(años)==5:
+        diccionario_clima[años[4]] = quinto_año
     
     return diccionario_clima
 
-"""
-PRE-CONDICION:recibe una lista vacia y una lista con los datos del archivo.
-POST-CONDICION: busca en el archivo csv las columnas que contienen el titulo Temperature.
-                Devuelve una lista con el indice de las columnas encontradas.
-"""
 def columna_temperatura(lista_clima):
+    """
+    PRE-CONDICION:recibe una lista vacia y una lista con los datos del archivo.
+    POST-CONDICION: busca en el archivo csv las columnas que contienen el titulo Temperature.
+                    Devuelve una lista con el indice de las columnas encontradas.
+    """
     columna_temp=[]
     for i in range(len(lista_clima[0])):
         cadena = "Temperature" in lista_clima[0][i]
@@ -265,21 +275,20 @@ def columna_temperatura(lista_clima):
         
     return columna_temp
 
-"""
-PRE-CONDICION: recibe una lista vacia, el diccionario organizado por años, una lista con los años y una lista de los indices
-                de las columnas que contienen los datos de temperatura.
-POST-CONDICION: devuelve una lista con el promedio de temperaturas de los ultimos cinco años.
-"""
-def promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha):
+def promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha, diccionario_clima):
+    """
+    PRE-CONDICION: recibe una lista vacia, el diccionario organizado por años, una lista con los años y una lista de los indices
+                    de las columnas que contienen los datos de temperatura.
+    POST-CONDICION: devuelve una lista con el promedio de temperaturas de los ultimos cinco años.
+    """
     suma = 0
     promedio = 0
     cont=0
     columna_temp=[]
-    diccionario_clima={}
     columna_temp=columna_temperatura(lista_clima)
-    diccionario_años(lista_clima, diccionario_clima,años, ubicacion_fecha)
     
-    while cont < 5:
+    
+    while cont < len(años):
         for i in range(len(diccionario_clima[años[cont]])):
             for j in range(len(columna_temp)):
                 suma+=float(diccionario_clima[años[cont]][i][columna_temp[j]])
@@ -289,28 +298,25 @@ def promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha):
         promedio = 0
         cont += 1
     return promedios
-"""
-PRE-CONDICION: recibe el diccionario con los datos, la lista de los años y la lista con la ubicacion de los datos de temperatura.
-POST-CONDICION: crea un grafico, que se muestra en pantalla, con los promedios de temperatura.
-"""
-def grafico_temp(lista_clima):
+
+def grafico_temp(lista_clima,años, ubicacion_fecha, diccionario_clima):
+    """
+    PRE-CONDICION: recibe el diccionario con los datos, la lista de los años y la lista con la ubicacion de los datos de temperatura.
+    POST-CONDICION: crea un grafico, que se muestra en pantalla, con los promedios de temperatura.
+    """
     promedios=[]
-    años=[]
-    ubicacion_fecha = columna_fecha(lista_clima)
-    define_años(lista_clima, años , ubicacion_fecha)
-    promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha)
+    promedio_temperatura(promedios,lista_clima, años, ubicacion_fecha, diccionario_clima)
     colores=["orangered","maroon","darkorange","gold", "brown"]
     plt.title("Promedio de Temperaturas de los últimos cinco años.")
     plt.bar(años, height=promedios, color=colores)
     plt.show()
     
-    
-"""
-PRE-CONDICION:recibe una lista vacia y una lista con los datos del archivo.
-POST-CONDICION: busca en el archivo csv las columnas que contienen el titulo Precipitation.
-                Devuelve una lista con el indice de las columnas encontradas.
-"""
 def columna_precipitacion(lista_clima):
+    """
+    PRE-CONDICION:recibe una lista vacia y una lista con los datos del archivo.
+    POST-CONDICION: busca en el archivo csv las columnas que contienen el titulo Precipitation.
+                    Devuelve una lista con el indice de las columnas encontradas.
+    """
     columna_precip=[]
     for i in range(len(lista_clima[0])):
         cadena="Precipitation" in lista_clima[0][i]
@@ -318,20 +324,18 @@ def columna_precipitacion(lista_clima):
             columna_precip.append(i)
     return columna_precip   
 
-"""
-PRE-CONDICION: recibe una lista vacia, el diccionario organizado por años, una lista con los años y una lista de los indices
-                de las columnas que contienen los datos de precipitacion.
-POST-CONDICION: devuelve una lista con el promedio de precipitaciones de los ultimos cinco años.
-"""
-def promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha):
+def promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha,diccionario_clima):
+    """
+    PRE-CONDICION: recibe una lista vacia, el diccionario organizado por años, una lista con los años y una lista de los indices
+                    de las columnas que contienen los datos de precipitacion.
+    POST-CONDICION: devuelve una lista con el promedio de precipitaciones de los ultimos cinco años.
+    """
     suma = 0
     promedio = 0
     cont = 0
     columna_precip=[]
-    diccionario_clima={}
-    diccionario_años(lista_clima, diccionario_clima,años, ubicacion_fecha)
     columna_precip=columna_precipitacion(lista_clima)
-    while cont < 5:
+    while cont < len(años):
         for i in range(len(diccionario_clima[años[cont]])):
             for j in range(len(columna_precip)):
                 suma += float(diccionario_clima[años[cont]][i][columna_precip[j]])
@@ -342,87 +346,99 @@ def promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha
         cont += 1
     return promedios_precip
     
-    
-
-"""
-PRE-CONDICION: recibe el diccionario con los datos, la lista de los años y la lista con la ubicacion de los datos de precipitación.
-POST-CONDICION: crea un grafico, que se muestra en pantalla, con los promedios de precipitación.
-"""
-def grafico_precip(lista_clima):
+def grafico_precip(lista_clima, años, ubicacion_fecha,diccionario_clima):
+    """
+    PRE-CONDICION: recibe el diccionario con los datos, la lista de los años y la lista con la ubicacion de los datos de precipitación.
+    POST-CONDICION: crea un grafico, que se muestra en pantalla, con los promedios de precipitación.
+    """
     promedios_precip=[]
-    años=[]
-    ubicacion_fecha = columna_fecha(lista_clima)
-    define_años(lista_clima, años, ubicacion_fecha)
-    promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha)
+    promedio_precipitacion(promedios_precip, lista_clima, años, ubicacion_fecha,diccionario_clima)
     colores=["midnightblue","royalblue","lightsteelblue","cornflowerblue", "slategrey"]
     plt.title("Promedio de Precipitaciones de los últimos cinco años.")
     plt.bar(años, height=promedios_precip, color=colores)
     plt.show()
     
-
-"""
-PRE-CONDICION: recibe la lista con los datos del archivo csv y otra lista con la posicion de la columna con datos de precipitacion.
-POST-CONDICION: devuelve el maxima cantidad de precipitacion.
-"""
-def maxima_precipitacion(lista_clima):
+def maxima_precipitacion(lista_clima, años, ubicacion_fecha,diccionario_clima):  
+    """
+    PRE-CONDICION: recibe la lista con los datos del archivo csv y otra lista con la posicion de la columna con datos de precipitacion.
+    POST-CONDICION: devuelve el maxima cantidad de precipitacion.
+    """
     precipitacion=[]
+    cont=0
     columna_precip=columna_precipitacion(lista_clima)
-    for i in range(len(lista_clima)):
-        for j in range(len(columna_precip)):
-            if i+1 < len(lista_clima):
-                precipitacion.append(float(lista_clima[i+1][columna_precip[j]]))
-            
+    
+    while cont < len(años):
+        for i in range(len(diccionario_clima[años[cont]])):
+            for j in range(len(columna_precip)):
+                precipitacion.append(float(diccionario_clima[años[cont]][i][columna_precip[j]]))
+        cont += 1
     maximo=max(precipitacion)
     return maximo
-"""
-PRE-CONDICION: recibe la lista con los datos del archivo csv y otra lista con la posicion de la columna con datos de temperatura.
-POST-CONDICION: devuelve el maxima temperatura alcanzada.
-"""
-def maxima_temperatura(lista_clima):
+
+def maxima_temperatura(lista_clima, años, ubicacion_fecha,diccionario_clima):
+    """
+    PRE-CONDICION: recibe la lista con los datos del archivo csv y otra lista con la posicion de la columna con datos de temperatura.
+    POST-CONDICION: devuelve el maxima temperatura alcanzada.
+    """
     temperatura=[]
+    cont=0
     columna_temp=columna_temperatura(lista_clima)
-    for i in range(len(lista_clima)):
-        for j in range(len(columna_temp)):
-            if i+1 < len(lista_clima):
-                temperatura.append(float(lista_clima[i+1][columna_temp[j]]))
-            
+    while cont < len(años):
+        for i in range(len(diccionario_clima[años[cont]])):
+            for j in range(len(columna_temp)):
+                temperatura.append(float(diccionario_clima[años[cont]][i][columna_temp[j]]))
+        cont += 1
     maximo=max(temperatura)
     return maximo
 
 
 def menu():
-    lista_clima = []
     opc=0
     while opc != 6:
         opc = int(input("Bienvenidos a Tormenta. \nMenú principal: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
         while opc <= 0 or opc > 6:
-            opc=int(input("Ingreso una opcion inválida. Reingrese: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \nOpción: "))
+            opc=int(input("Ingreso una opcion inválida. Reingrese: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
         if opc == 1:
             alertas_actuales_por_usuario()
         elif opc == 2:
             alertas_actuales()
         elif opc == 3:
-            opcion=0
+            lista_clima = []
+            años=[]
+            diccionario_clima={}
             cargar_archivo(lista_clima)
+            ubicacion_fecha = columna_fecha(lista_clima)
+            define_años(lista_clima, años, ubicacion_fecha)
+            diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha)
+            opcion=0
             print("----Carga de archivo exitosa----")
+            
             while opcion != 4:
                 opcion=int(input("Menú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: "))
                 while opcion <= 0 or opcion > 4:
                     opcion=int(input("Ingreso una opcion inválida. Reingrese: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: "))
             
                 if opcion == 1:
-                    grafico_temp(lista_clima)
+                    grafico_temp(lista_clima,años,ubicacion_fecha,diccionario_clima)
                 elif opcion == 2:
-                    grafico_precip(lista_clima)
+                    grafico_precip(lista_clima,años, ubicacion_fecha,diccionario_clima)
                 elif opcion == 3:
-                    print(f"La cantidad de milímetros maximos registrada en los últimos cinco años fue de {maxima_precipitacion(lista_clima)}")
-                    print(f"La máxima temperatura registrada en los últimos cinco años fue de {maxima_temperatura(lista_clima)}")
+                    print(f"La cantidad de milímetros maximos registrada en los últimos cinco años fue de {maxima_precipitacion(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f} ml")
+                    print(f"La máxima temperatura registrada en los últimos cinco años fue de {maxima_temperatura(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f}ºC")
 
         elif opc == 4:
             pronostico_extendido()
+            alertas_actuales_por_usuario()
         elif opc == 5:
             analisis_imagen()
            
 def main():
-   menu()     
+   menu()
+             
 main()
+
+
+
+
+
+
