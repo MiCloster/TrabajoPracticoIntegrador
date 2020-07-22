@@ -392,14 +392,14 @@ def maxima_temperatura(lista_clima, años, ubicacion_fecha,diccionario_clima):
     return maximo
 
 
-def menu():
+def main():
     opc=0
     while opc != 6:
         opc = int(input("Bienvenidos a Tormenta. \nMenú principal: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
         while opc <= 0 or opc > 6:
             opc=int(input("Ingreso una opcion inválida. Reingrese: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
         if opc == 1:
-            alertas_actuales_por_usuario()
+            alertas_actuales_por_usuario(1)
         elif opc == 2:
             alertas_actuales()
         elif opc == 3:
@@ -428,13 +428,8 @@ def menu():
 
         elif opc == 4:
             pronostico_extendido()
-            alertas_actuales_por_usuario()
         elif opc == 5:
             analisis_imagen()
-           
-def main():
-   menu()
-             
 main()
 
 
