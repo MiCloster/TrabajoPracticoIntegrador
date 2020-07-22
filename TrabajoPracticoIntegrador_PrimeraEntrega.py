@@ -5,6 +5,21 @@ from datetime import date
 from datetime import timedelta
 from PIL import Image
 
+def verificar_ingreso_numerico(a_verificar,primer_valor,ultimo_valor):
+    """Verifica que el valor ingresado por el usuario sea un entero entre los valores requeridos
+    pre: Recive una variable con cualquier valor, y dos enteros
+    post: Devuelve un int
+    """
+    while type(a_verificar) != int or (type(a_verificar) == int and (a_verificar < primer_valor or a_verificar > ultimo_valor)):
+        if type(a_verificar) != int:
+            try:
+                a_verificar = int(a_verificar)
+            except:
+                a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+        elif a_verificar < primer_valor or a_verificar > ultimo_valor:
+            a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+    return a_verificar
+
 def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
     """Muestra en pantalla el pronostico de la ciudad ingresada
     PRE: datos de la pagina SNM, lista con las provincias y ciudades, opciones legidas por el usuario
@@ -46,7 +61,8 @@ def pronostico_extendido():
     for provincia in range(len(provincias)):
         print (f"{provincia} - {provincias[provincia]}")
     print()
-    opcion_provincia = int(input(f"Por favor elegir una provincia del 0 al {len(provincias)}: "))
+    opcion_provincia = input(f"Por favor elegir una provincia del 0 al {len(provincias) - 1}: ")
+    opcion_provincia = verificar_ingreso_numerico(opcion_provincia,0,len(provincias) - 1)
     print()
     for tiempo in range(len(datos_1)):
         #print(datos_1[tiempo]['name'])
@@ -58,9 +74,9 @@ def pronostico_extendido():
     for ciudad in range(len(ciudades)):
         print (f"{ciudad} - {ciudades[ciudad]}")
     print()
-    opcion_ciudad = int(input(f"Por favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades)}: "))
-    print()
-    print()
+    opcion_ciudad = input(f"Por favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades) - 1}: ")
+    opcion_ciudad = verificar_ingreso_numerico(opcion_ciudad,0,len(ciudades) - 1)
+    print("\n")
     hoy = date.today()
     mañana = hoy + timedelta(days=1)
     despues_de_mañana= hoy + timedelta(days=2)
@@ -158,8 +174,10 @@ def declarar_alerta(colores_contados):
     return "Sin alerta proxima"
     
 def analisis_imagen():
+    imagen_electa = input("\nEscriba ubicación/nombre de la imagen .png a analizar (0 si desea usar una imagen predeterminada): ")
+    imagen_electa = imagen_electa + ".png"
     try:
-        im = Image.open("imagen_a_analizar.png")
+        im = Image.open(imagen_electa)
         im = im.convert("RGB")
         CIUDADES = {"Neuquén":(238,441),"Santa Rosa":(358,342),"Córdoba":(360,129),"Bahia Blanca":(423,428),"Pergamino":(484,232),"Parana":(488,144),"C.A.B.A.":(555,264),"Mar del Plata":(575,404),"Mercedes":(579,42),"La Plata":(571,279),"Paraná":(488,144)}
         for i in CIUDADES:
@@ -167,7 +185,10 @@ def analisis_imagen():
             alerta = declarar_alerta(colores_contados)
             print(alerta, "en", i)
     except:
-        print("No existe imagen imagen_a_analizar.png en la misma carpeta que el archivo .py")
+        if imagen_electa == "0.png":
+            print("La imagen predeterminada", imagen_electa, "fue eliminada o no se descargo correcramente")
+        else:
+            print("No existe imagen", imagen_electa, "con el formato correspondiente en la misma carpeta que el archivo .py")
 
 
 def cargar_archivo(lista_clima):
@@ -393,11 +414,12 @@ def maxima_temperatura(lista_clima, años, ubicacion_fecha,diccionario_clima):
 
 
 def main():
+    print("Bienvenidos a Tormenta.")
     opc=0
     while opc != 6:
-        opc = int(input("Bienvenidos a Tormenta. \nMenú principal: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
-        while opc <= 0 or opc > 6:
-            opc=int(input("Ingreso una opcion inválida. Reingrese: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir. \nOpción: "))
+        print("\nMenú principal: \n1.Listado de alertas por geolocalizacion. \n2.Listado de alertas nacionales. \n3.Información de archivo csv. \n4.Pronostico extendido. \n5.Radar. \n6.Salir.")
+        opc = input("Opción: ")
+        opc = verificar_ingreso_numerico(opc,1,6)
         if opc == 1:
             alertas_actuales_por_usuario(1)
         elif opc == 2:
@@ -414,10 +436,9 @@ def main():
             print("----Carga de archivo exitosa----")
             
             while opcion != 4:
-                opcion=int(input("Menú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: "))
-                while opcion <= 0 or opcion > 4:
-                    opcion=int(input("Ingreso una opcion inválida. Reingrese: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: "))
-            
+                opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
+                opcion = verificar_ingreso_numerico(opcion,0,4)
+                try:
                 if opcion == 1:
                     grafico_temp(lista_clima,años,ubicacion_fecha,diccionario_clima)
                 elif opcion == 2:
@@ -431,9 +452,5 @@ def main():
         elif opc == 5:
             analisis_imagen()
 main()
-
-
-
-
 
 
