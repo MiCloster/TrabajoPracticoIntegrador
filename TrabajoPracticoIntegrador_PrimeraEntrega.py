@@ -88,7 +88,7 @@ def alertas_actuales():
             print(datos[alerta]['zones'][zona])
         print("---------------------------------------------------------")
     
-def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
+def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
     """ Determina las alertas cercanas o en la provincia ingresada por el usuario
     PRE: recibe la opcion si necesita que ingrese la zona o no
     """
