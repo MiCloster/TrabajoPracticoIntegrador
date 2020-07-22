@@ -438,7 +438,6 @@ def main():
             while opcion != 4:
                 opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
                 opcion = verificar_ingreso_numerico(opcion,0,4)
-                try:
                 if opcion == 1:
                     grafico_temp(lista_clima,años,ubicacion_fecha,diccionario_clima)
                 elif opcion == 2:
