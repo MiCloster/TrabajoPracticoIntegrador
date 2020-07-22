@@ -42,6 +42,27 @@ def fecha_amigable(fecha):
     año = fecha.year
     print(f"{dia} de {mes} del {año}")
 
+def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
+    """ Determina las alertas cercanas o en la provincia ingresada por el usuario
+    PRE: recibe la opcion si necesita que ingrese la zona o no
+    """
+    alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
+    datos = alerta_actual.json()
+    cont= 0
+    if opcion == 1:
+        zona_ingresada = (input("Ingresar provincia: ")).capitalize()
+    for alerta in range(len(datos)):
+        for zona in datos[alerta]['zones']:
+            if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
+                cont += 1
+                print (f"{datos[alerta]['title']}: {datos[alerta]['description']}\n")
+                print("Zonas")
+                for zona in datos[alerta]['zones']:
+                    print(datos[alerta]['zones'][zona])
+                print("---------------------------------------------------------")
+    if cont == 0:
+        print("\nNo existen alertas para esa zona")
+
 def pronostico_extendido():
     """ Determina el pronostico de los proximos tres días
     """
@@ -104,29 +125,6 @@ def alertas_actuales():
             print(datos[alerta]['zones'][zona])
         print("---------------------------------------------------------")
     
-def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
-    """ Determina las alertas cercanas o en la provincia ingresada por el usuario
-    PRE: recibe la opcion si necesita que ingrese la zona o no
-    """
-    alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
-    datos = alerta_actual.json()
-    cont= 0
-    if opcion == 1:
-        zona_ingresada = (input("Ingresar provincia: ")).capitalize()
-    for alerta in range(len(datos)):
-        for zona in datos[alerta]['zones']:
-            if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
-                cont += 1
-                print (f"{datos[alerta]['title']}: {datos[alerta]['description']}")
-                print()
-                print("Zonas")
-                for zona in datos[alerta]['zones']:
-                    print(datos[alerta]['zones'][zona])
-                print("---------------------------------------------------------")
-    if cont == 0:
-        print()
-        print("No existen alertas para esa zona")
-
 def suma_colores(im,CIUDAD):
     """ Determina la cantidad de pixeles del mismo color en un rango determinado
     pre: Recibe un image class y una tupla con dos valores (coord x, coord y)
@@ -174,7 +172,7 @@ def declarar_alerta(colores_contados):
     return "Sin alerta proxima"
     
 def analisis_imagen():
-    imagen_electa = input("\nEscriba ubicación/nombre de la imagen .png a analizar (0 si desea usar una imagen predeterminada): ")
+    imagen_electa = input("\nEscriba ubicación/nombre (sin formato) de la imagen .png a analizar (0 si desea usar una imagen predeterminada): ")
     imagen_electa = imagen_electa + ".png"
     try:
         im = Image.open(imagen_electa)
@@ -205,10 +203,13 @@ def cargar_archivo(lista_clima):
             nombre_archivo = input("No ingresó ningun nombre. Reingrese: ")
     else:
         nombre_archivo = "clima2016-2020.csv"
-    with open(nombre_archivo) as archivo:
-        linea = csv.reader(archivo)
-        for filas in linea:
-           lista_clima.append(filas)
+    try:
+        with open(nombre_archivo) as archivo:
+            linea = csv.reader(archivo)
+            for filas in linea:
+               lista_clima.append(filas)
+    except:
+        print("Archivo",nombre_archivo ,"no existe")
     return lista_clima
 
 def columna_fecha(lista_clima):
@@ -421,33 +422,43 @@ def main():
         opc = input("Opción: ")
         opc = verificar_ingreso_numerico(opc,1,6)
         if opc == 1:
-            alertas_actuales_por_usuario(1)
+            try:
+                alertas_actuales_por_usuario(1)
+            except:
+                print("Error de internet, verifique su conexión y vuelva a intentarlo")
         elif opc == 2:
-            alertas_actuales()
+            try:
+                alertas_actuales()
+            except:
+                print("Error de internet, verifique su conexión y vuelva a intentarlo")
         elif opc == 3:
             lista_clima = []
             años=[]
             diccionario_clima={}
             cargar_archivo(lista_clima)
-            ubicacion_fecha = columna_fecha(lista_clima)
-            define_años(lista_clima, años, ubicacion_fecha)
-            diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha)
-            opcion=0
-            print("----Carga de archivo exitosa----")
-            
-            while opcion != 4:
-                opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
-                opcion = verificar_ingreso_numerico(opcion,0,4)
-                if opcion == 1:
-                    grafico_temp(lista_clima,años,ubicacion_fecha,diccionario_clima)
-                elif opcion == 2:
-                    grafico_precip(lista_clima,años, ubicacion_fecha,diccionario_clima)
-                elif opcion == 3:
-                    print(f"La cantidad de milímetros maximos registrada en los últimos cinco años fue de {maxima_precipitacion(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f} ml")
-                    print(f"La máxima temperatura registrada en los últimos cinco años fue de {maxima_temperatura(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f}ºC")
+            if lista_clima != []:
+                ubicacion_fecha = columna_fecha(lista_clima)
+                define_años(lista_clima, años, ubicacion_fecha)
+                diccionario_años(lista_clima, diccionario_clima, años , ubicacion_fecha)
+                opcion=0
+                print("----Carga de archivo exitosa----")
+                
+                while opcion != 4:
+                    opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
+                    opcion = verificar_ingreso_numerico(opcion,1,4)
+                    if opcion == 1:
+                        grafico_temp(lista_clima,años,ubicacion_fecha,diccionario_clima)
+                    elif opcion == 2:
+                        grafico_precip(lista_clima,años, ubicacion_fecha,diccionario_clima)
+                    elif opcion == 3:
+                        print(f"La cantidad de milímetros maximos registrada en los últimos cinco años fue de {maxima_precipitacion(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f} ml")
+                        print(f"La máxima temperatura registrada en los últimos cinco años fue de {maxima_temperatura(lista_clima,años,ubicacion_fecha, diccionario_clima): .1f}ºC")
 
         elif opc == 4:
-            pronostico_extendido()
+            try:
+                pronostico_extendido()
+            except:
+                print("Error de internet, verifique su conexión y vuelva a intentarlo")
         elif opc == 5:
             analisis_imagen()
 main()
