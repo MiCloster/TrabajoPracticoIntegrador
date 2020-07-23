@@ -4,6 +4,28 @@ import requests
 from datetime import date
 from datetime import timedelta
 from PIL import Image
+from geopy.geocoders import Nominatim
+
+def encontrar_ubicacion(lat,long):
+    """Determina la dirección correspondiente a la latitud y longitud ingresadas por el usuario
+    pre: Recibe dos int
+    post: Devuelve un string
+    """
+    coords = f"{lat}, {long}"
+    #La libreria geopy requiere que se ingrese el limite de ubicaciónes que se van a localizar, o una dirección de mail
+    try:
+        geolocator = Nominatim(user_agent="mdelcastillo@fi.uba.ar")
+        direccion = geolocator.reverse(coords)
+        dir_prov = direccion.raw
+        try:
+            provincia = dir_prov['address']['state']
+        except:
+            provincia = dir_prov['address']['city']
+        pais = dir_prov['address']['country']
+    except:
+        provincia = "-"
+        pais = "-"
+    return [provincia,pais]
 
 def verificar_ingreso_numerico(a_verificar,primer_valor,ultimo_valor):
     """Verifica que el valor ingresado por el usuario sea un entero entre los valores requeridos
@@ -49,8 +71,18 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
+    localizacion = ["","Argentina"]
     if opcion == 1:
-        zona_ingresada = (input("Ingresar provincia: ")).capitalize()
+        lat = input("Ingrese latitud: ")
+        long = input("Ingrese longitud: ")
+        localizacion = encontrar_ubicacion(lat,long)
+        if localizacion[1] == "Argentina":
+            zona_ingresada = localizacion[0]
+            print("Provincia correspondiente: ",zona_ingresada)
+        elif localizacion[1] != "-":
+            print("Las coordenadas introducidas no corresponden a Argentina, corresponden a ", localizacion[1])
+        else:
+            print("Error, no hay conexión a internet, las coordenadas introducidas corresponden a un Océano o Mar, o no se ingresaron coordenadas validas")
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
             if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
@@ -60,7 +92,7 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
                 for zona in datos[alerta]['zones']:
                     print(datos[alerta]['zones'][zona])
                 print("---------------------------------------------------------")
-    if cont == 0:
+    if cont == 0 and localizacion[1] == "Argentina":
         print("\nNo existen alertas para esa zona")
 
 def pronostico_extendido():
