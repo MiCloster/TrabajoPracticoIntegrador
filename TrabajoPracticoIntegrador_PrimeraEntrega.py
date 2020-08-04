@@ -31,10 +31,10 @@ def pronostico_extendido():
     datos= []
     pronostico_extendido = []
     dias= []
-    for posicion in range(len(snm_informacion)):
-        pronostico_extendido[posicion]= request.gets(snm_informacion[posicion])
-        datos[posicion]= pronostico_extendido[posicion].jason()
-        dias[posicion] = date.today() + timedelta(days= posicion)
+    for i in range(len(snm_informacion)):
+        pronostico_extendido.append(requests.get(snm_informacion[i]))
+        datos.append(pronostico_extendido[i].json())
+        dias.append( date.today() + timedelta(days= i))
     provincias = []
     ciudades = []
     for tiempo in range(len(datos[0])):
@@ -44,13 +44,15 @@ def pronostico_extendido():
     for provincia in range(len(provincias)):
         print (f"{provincia} - {provincias[provincia]}")
     opcion_provincia = int(input(f"\nPor favor elegir una provincia del 0 al {len(provincias)}: "))
+    opcion_provincia = verificar_ingreso_numerico(opcion_provincia,0,len(provincias) - 1)
     for tiempo in range(len(datos[0])):
         if datos[0][tiempo]['name'] not in ciudades and datos[0][tiempo]['province'] == provincias[opcion_provincia]:
             ciudades.append(datos[0][tiempo]['name'])
     ciudades.sort(key=str.lower)
     for ciudad in range(len(ciudades)):
-        print (f"\n{ciudad} - {ciudades[ciudad]}")
+        print (f"{ciudad} - {ciudades[ciudad]}")
     opcion_ciudad = int(input(f"\nPor favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades)}: \n"))
+    opcion_ciudad = verificar_ingreso_numerico(opcion_ciudad,0,len(ciudades) - 1)
     for posicion in range(len(snm_informacion)):
         fecha_amigable(dias[posicion])
         mostrar_pronostico(datos[posicion],provincias[opcion_provincia],ciudades[opcion_ciudad])
@@ -81,14 +83,14 @@ def ingreso_ubicacion_por_usuario():
         print("Error, no hay conexión a internet, las coordenadas introducidas corresponden a un Océano o Mar, o no se ingresaron coordenadas validas")
     return zona_ingresada
     
-def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
+def alertas_actuales_por_usuario(opcion, zona_ingresada="cfk"):
     """ Determina las alertas cercanas o en la provincia ingresada por el usuario
     PRE: recibe la opcion si necesita que ingrese la zona o no
     """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
-    if opcion == 1
+    if opcion == 1:
         zona_ingresada = ingreso_ubicacion_por_usuario() 
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
