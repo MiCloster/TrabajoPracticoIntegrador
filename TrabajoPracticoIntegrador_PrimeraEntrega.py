@@ -1,6 +1,3 @@
-from PIL import Image
-from geopy.geocoders import Nominatim
-
 def encontrar_ubicacion(lat,long):
     """Determina la dirección correspondiente a la latitud y longitud ingresadas por el usuario
     pre: Recibe dos int
