@@ -2,73 +2,60 @@ import requests
 from datetime import date
 from datetime import timedelta
 
-def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
+def mostrar_pronostico (datos, provincia, ciudad):
     """Muestra en pantalla el pronostico de la ciudad ingresada
     PRE: datos de la pagina SNM, lista con las provincias y ciudades, opciones legidas por el usuario
     """
     for tiempo in range(len(datos)):
-        if datos[tiempo]['name'] == ciudades[opcion_ciudad] and datos[tiempo]['province'] == provincias[opcion_provincia]:
-            print(f"Temperatura a la mañana: {datos[tiempo]['weather']['morning_temp']}°C")
+        if datos[tiempo]['name'] == ciudad and datos[tiempo]['province'] == provincia:
+            print(f"\nTemperatura a la mañana: {datos[tiempo]['weather']['morning_temp']}°C")
             print(f"Tiempo a la mañana: {datos[tiempo]['weather']['morning_desc']}")
             print(f"Temperatura a la tarde: {datos[tiempo]['weather']['afternoon_temp']}°C")
-            print(f"Tiempo a la tarde: {datos[tiempo]['weather']['afternoon_desc']}")
+            print(f"Tiempo a la tarde: {datos[tiempo]['weather']['afternoon_desc']}\n")
             
 def fecha_amigable(fecha):
     """ Cambia el formato de la fecha, para que sea más amigable con el usuario
     pre: recibe una fecha en formato dd- mm- aaaa
     Muestra en pantalla un string con el formate de fecha dia de mes del año
     """
-    meses = ("Enero", "Febrero", "Marzo", "Abri", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+    meses = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
     dia = fecha.day
     mes = meses[fecha.month - 1]
     año = fecha.year
-    print(f"{dia} de {mes} del {año}")
+    print(f"\n\n{dia} de {mes} del {año}")
 
 def pronostico_extendido():
     """ Determina el pronostico de los proximos tres días
     """
-    pronosticos_extendidos_1 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/1')
-    pronosticos_extendidos_2 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/2')
-    pronosticos_extendidos_3 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/3')
-    datos_1 = pronosticos_extendidos_1.json()
-    datos_2 = pronosticos_extendidos_2.json()
-    datos_3 = pronosticos_extendidos_3.json()
+    snm_informacion= ['https://ws.smn.gob.ar/map_items/forecast/1','https://ws.smn.gob.ar/map_items/forecast/2','https://ws.smn.gob.ar/map_items/forecast/3']
+    datos= []
+    pronostico_extendido = []
+    dias= []
+    for i in range(len(snm_informacion)):
+        pronostico_extendido.append(requests.get(snm_informacion[i]))
+        datos.append(pronostico_extendido[i].json())
+        dias.append( date.today() + timedelta(days= i))
     provincias = []
     ciudades = []
-    #print(datos_1)
-    for tiempo in range(len(datos_1)):
-        if datos_1[tiempo]['province'] not in provincias:
-            provincias.append(datos_1[tiempo]['province'])
+    for tiempo in range(len(datos[0])):
+        if datos[0][tiempo]['province'] not in provincias:
+            provincias.append(datos[0][tiempo]['province'])
     provincias.sort(key=str.lower)
     for provincia in range(len(provincias)):
         print (f"{provincia} - {provincias[provincia]}")
-    print()
-    opcion_provincia = int(input(f"Por favor elegir una provincia del 0 al {len(provincias)}: "))
-    print()
-    for tiempo in range(len(datos_1)):
-        #print(datos_1[tiempo]['name'])
-        #print(datos_1[tiempo]['province'])
-        #print(provincias[opcion_provincia])
-        if datos_1[tiempo]['name'] not in ciudades and datos_1[tiempo]['province'] == provincias[opcion_provincia]:
-            ciudades.append(datos_1[tiempo]['name'])
+    opcion_provincia = int(input(f"\nPor favor elegir una provincia del 0 al {len(provincias)}: "))
+    opcion_provincia = verificar_ingreso_numerico(opcion_provincia,0,len(provincias) - 1)
+    for tiempo in range(len(datos[0])):
+        if datos[0][tiempo]['name'] not in ciudades and datos[0][tiempo]['province'] == provincias[opcion_provincia]:
+            ciudades.append(datos[0][tiempo]['name'])
     ciudades.sort(key=str.lower)
     for ciudad in range(len(ciudades)):
         print (f"{ciudad} - {ciudades[ciudad]}")
-    print()
-    opcion_ciudad = int(input(f"Por favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades)}: "))
-    print()
-    print()
-    hoy = date.today()
-    mañana = hoy + timedelta(days=1)
-    despues_de_mañana= hoy + timedelta(days=2)
-    fecha_amigable(hoy)
-    mostrar_pronostico (datos_1, provincias, opcion_provincia, ciudades, opcion_ciudad)
-    print()
-    fecha_amigable(mañana)
-    mostrar_pronostico (datos_2, provincias, opcion_provincia, ciudades, opcion_ciudad)
-    print()
-    fecha_amigable(despues_de_mañana)
-    mostrar_pronostico (datos_3, provincias, opcion_provincia, ciudades, opcion_ciudad)
+    opcion_ciudad = int(input(f"\nPor favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades)}: \n"))
+    opcion_ciudad = verificar_ingreso_numerico(opcion_ciudad,0,len(ciudades) - 1)
+    for posicion in range(len(snm_informacion)):
+        fecha_amigable(dias[posicion])
+        mostrar_pronostico(datos[posicion],provincias[opcion_provincia],ciudades[opcion_ciudad])
     alertas_actuales_por_usuario(2, provincias[opcion_provincia])
     
 def alertas_actuales():
@@ -77,33 +64,42 @@ def alertas_actuales():
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     for alerta in range(len(datos)):
-        print()
-        print(f"{datos[alerta]['title']}: {datos[alerta]['description']}")
-        print()
-        print("ZONAS:")
+        print(f"\n{datos[alerta]['title']}: {datos[alerta]['description']}")
+        print("\nZONAS:")
         for zona in datos[alerta]['zones']:
             print(datos[alerta]['zones'][zona])
         print("---------------------------------------------------------")
+        
+def ingreso_ubicacion_por_usuario():
+    lat = input("Ingrese latitud: ")
+    long = input("Ingrese longitud: ")
+    localizacion = encontrar_ubicacion(lat,long)
+    if localizacion[1] == "Argentina":
+        zona_ingresada = localizacion[0]
+        print("Provincia correspondiente: ",zona_ingresada)
+    elif localizacion[1] != "-":
+        print("Las coordenadas introducidas no corresponden a Argentina, corresponden a ", localizacion[1])
+    else:
+        print("Error, no hay conexión a internet, las coordenadas introducidas corresponden a un Océano o Mar, o no se ingresaron coordenadas validas")
+    return zona_ingresada
     
-def alertas_actuales_por_usuario(opcion, zona_ingresada=cfk):
+def alertas_actuales_por_usuario(opcion, zona_ingresada="cfk"):
     """ Determina las alertas cercanas o en la provincia ingresada por el usuario
     PRE: recibe la opcion si necesita que ingrese la zona o no
     """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     cont= 0
-    if opcion == 1
-        zona_ingresada = (input("Ingresar provincia: ")).capitalize()
+    if opcion == 1:
+        zona_ingresada = ingreso_ubicacion_por_usuario() 
     for alerta in range(len(datos)):
         for zona in datos[alerta]['zones']:
             if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
                 cont += 1
-                print (f"{datos[alerta]['title']}: {datos[alerta]['description']}")
-                print()
-                print("Zonas")
+                print (f"\n{datos[alerta]['title']}: {datos[alerta]['description']}")
+                print("\nZonas")
                 for zona in datos[alerta]['zones']:
                     print(datos[alerta]['zones'][zona])
                 print("---------------------------------------------------------")
     if cont == 0:
-        print()
-        print("No existen alertas para esa zona")
+        print("\n\nNo existen alertas para esa zona")
