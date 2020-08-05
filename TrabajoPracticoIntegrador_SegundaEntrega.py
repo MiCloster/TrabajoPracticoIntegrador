@@ -1,10 +1,3 @@
-<<<<<<< HEAD
-import requests
-from datetime import date
-from datetime import timedelta
-
-def mostrar_pronostico (datos, provincia, ciudad):
-=======
 import csv
 import matplotlib.pyplot as plt
 import requests
@@ -49,80 +42,31 @@ def verificar_ingreso_numerico(a_verificar,primer_valor,ultimo_valor):
             a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
     return a_verificar
 
-def mostrar_pronostico (datos, provincias, opcion_provincia, ciudades, opcion_ciudad):
->>>>>>> master
+def mostrar_pronostico (datos, provincia, ciudad):
     """Muestra en pantalla el pronostico de la ciudad ingresada
     PRE: datos de la pagina SNM, lista con las provincias y ciudades, opciones legidas por el usuario
     """
     for tiempo in range(len(datos)):
-<<<<<<< HEAD
         if datos[tiempo]['name'] == ciudad and datos[tiempo]['province'] == provincia:
             print(f"\nTemperatura a la mañana: {datos[tiempo]['weather']['morning_temp']}°C")
             print(f"Tiempo a la mañana: {datos[tiempo]['weather']['morning_desc']}")
             print(f"Temperatura a la tarde: {datos[tiempo]['weather']['afternoon_temp']}°C")
             print(f"Tiempo a la tarde: {datos[tiempo]['weather']['afternoon_desc']}\n")
-=======
-        if datos[tiempo]['name'] == ciudades[opcion_ciudad] and datos[tiempo]['province'] == provincias[opcion_provincia]:
-            print(f"Temperatura a la mañana: {datos[tiempo]['weather']['morning_temp']}°C")
-            print(f"Tiempo a la mañana: {datos[tiempo]['weather']['morning_desc']}")
-            print(f"Temperatura a la tarde: {datos[tiempo]['weather']['afternoon_temp']}°C")
-            print(f"Tiempo a la tarde: {datos[tiempo]['weather']['afternoon_desc']}")
->>>>>>> master
             
 def fecha_amigable(fecha):
     """ Cambia el formato de la fecha, para que sea más amigable con el usuario
     pre: recibe una fecha en formato dd- mm- aaaa
     Muestra en pantalla un string con el formate de fecha dia de mes del año
     """
-<<<<<<< HEAD
     meses = ("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
     dia = fecha.day
     mes = meses[fecha.month - 1]
     año = fecha.year
     print(f"\n\n{dia} de {mes} del {año}")
-=======
-    meses = ("Enero", "Febrero", "Marzo", "Abri", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
-    dia = fecha.day
-    mes = meses[fecha.month - 1]
-    año = fecha.year
-    print(f"{dia} de {mes} del {año}")
-
-def alertas_actuales_por_usuario(opcion, zona_ingresada='cfk'):
-    """ Determina las alertas cercanas o en la provincia ingresada por el usuario
-    PRE: recibe la opcion si necesita que ingrese la zona o no
-    """
-    alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
-    datos = alerta_actual.json()
-    cont= 0
-    localizacion = ["","Argentina"]
-    if opcion == 1:
-        lat = input("Ingrese latitud: ")
-        long = input("Ingrese longitud: ")
-        localizacion = encontrar_ubicacion(lat,long)
-        if localizacion[1] == "Argentina":
-            zona_ingresada = localizacion[0]
-            print("Provincia correspondiente: ",zona_ingresada)
-        elif localizacion[1] != "-":
-            print("Las coordenadas introducidas no corresponden a Argentina, corresponden a ", localizacion[1])
-        else:
-            print("Error, no hay conexión a internet, las coordenadas introducidas corresponden a un Océano o Mar, o no se ingresaron coordenadas validas")
-    for alerta in range(len(datos)):
-        for zona in datos[alerta]['zones']:
-            if (datos[alerta]['zones'][zona].find(zona_ingresada)) >= 0:
-                cont += 1
-                print (f"{datos[alerta]['title']}: {datos[alerta]['description']}\n")
-                print("Zonas")
-                for zona in datos[alerta]['zones']:
-                    print(datos[alerta]['zones'][zona])
-                print("---------------------------------------------------------")
-    if cont == 0 and localizacion[1] == "Argentina":
-        print("\nNo existen alertas para esa zona")
->>>>>>> master
 
 def pronostico_extendido():
     """ Determina el pronostico de los proximos tres días
     """
-<<<<<<< HEAD
     snm_informacion= ['https://ws.smn.gob.ar/map_items/forecast/1','https://ws.smn.gob.ar/map_items/forecast/2','https://ws.smn.gob.ar/map_items/forecast/3']
     datos= []
     pronostico_extendido = []
@@ -152,51 +96,6 @@ def pronostico_extendido():
     for posicion in range(len(snm_informacion)):
         fecha_amigable(dias[posicion])
         mostrar_pronostico(datos[posicion],provincias[opcion_provincia],ciudades[opcion_ciudad])
-=======
-    pronosticos_extendidos_1 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/1')
-    pronosticos_extendidos_2 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/2')
-    pronosticos_extendidos_3 =  requests.get('https://ws.smn.gob.ar/map_items/forecast/3')
-    datos_1 = pronosticos_extendidos_1.json()
-    datos_2 = pronosticos_extendidos_2.json()
-    datos_3 = pronosticos_extendidos_3.json()
-    provincias = []
-    ciudades = []
-    #print(datos_1)
-    for tiempo in range(len(datos_1)):
-        if datos_1[tiempo]['province'] not in provincias:
-            provincias.append(datos_1[tiempo]['province'])
-    provincias.sort(key=str.lower)
-    for provincia in range(len(provincias)):
-        print (f"{provincia} - {provincias[provincia]}")
-    print()
-    opcion_provincia = input(f"Por favor elegir una provincia del 0 al {len(provincias) - 1}: ")
-    opcion_provincia = verificar_ingreso_numerico(opcion_provincia,0,len(provincias) - 1)
-    print()
-    for tiempo in range(len(datos_1)):
-        #print(datos_1[tiempo]['name'])
-        #print(datos_1[tiempo]['province'])
-        #print(provincias[opcion_provincia])
-        if datos_1[tiempo]['name'] not in ciudades and datos_1[tiempo]['province'] == provincias[opcion_provincia]:
-            ciudades.append(datos_1[tiempo]['name'])
-    ciudades.sort(key=str.lower)
-    for ciudad in range(len(ciudades)):
-        print (f"{ciudad} - {ciudades[ciudad]}")
-    print()
-    opcion_ciudad = input(f"Por favor elegir una ciudad de {provincias[opcion_provincia]} del 0 al {len(ciudades) - 1}: ")
-    opcion_ciudad = verificar_ingreso_numerico(opcion_ciudad,0,len(ciudades) - 1)
-    print("\n")
-    hoy = date.today()
-    mañana = hoy + timedelta(days=1)
-    despues_de_mañana= hoy + timedelta(days=2)
-    fecha_amigable(hoy)
-    mostrar_pronostico (datos_1, provincias, opcion_provincia, ciudades, opcion_ciudad)
-    print()
-    fecha_amigable(mañana)
-    mostrar_pronostico (datos_2, provincias, opcion_provincia, ciudades, opcion_ciudad)
-    print()
-    fecha_amigable(despues_de_mañana)
-    mostrar_pronostico (datos_3, provincias, opcion_provincia, ciudades, opcion_ciudad)
->>>>>>> master
     alertas_actuales_por_usuario(2, provincias[opcion_provincia])
     
 def alertas_actuales():
@@ -205,7 +104,6 @@ def alertas_actuales():
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
     for alerta in range(len(datos)):
-<<<<<<< HEAD
         print(f"\n{datos[alerta]['title']}: {datos[alerta]['description']}")
         print("\nZONAS:")
         for zona in datos[alerta]['zones']:
@@ -245,14 +143,6 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada="cfk"):
                 print("---------------------------------------------------------")
     if cont == 0:
         print("\n\nNo existen alertas para esa zona")
-=======
-        print()
-        print(f"{datos[alerta]['title']}: {datos[alerta]['description']}")
-        print()
-        print("ZONAS:")
-        for zona in datos[alerta]['zones']:
-            print(datos[alerta]['zones'][zona])
-        print("---------------------------------------------------------")
     
 def suma_colores(im,CIUDAD):
     """ Determina la cantidad de pixeles del mismo color en un rango determinado
@@ -316,7 +206,6 @@ def analisis_imagen():
             print("La imagen predeterminada", imagen_electa, "fue eliminada o no se descargo correcramente")
         else:
             print("No existe imagen", imagen_electa, "con el formato correspondiente en la misma carpeta que el archivo .py")
-
 
 def cargar_archivo(lista_clima):
     """
@@ -591,6 +480,3 @@ def main():
         elif opc == 5:
             analisis_imagen()
 main()
-
-
->>>>>>> master
