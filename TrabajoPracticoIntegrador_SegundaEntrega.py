@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import csv
 import matplotlib.pyplot as plt
 import requests
@@ -21,6 +22,23 @@ def encontrar_ubicacion(lat,long):
             provincia = dir_prov['address']['state']
         except:
             provincia = dir_prov['address']['city']
+=======
+def encontrar_ubicacion(lat,long):
+    """Determina la dirección correspondiente a la latitud y longitud ingresadas por el usuario
+    pre: Recibe dos int
+    post: Devuelve una lista con dos strings
+    """
+    coords = f"{lat}, {long}"
+    MAIL = "mdelcastillo@fi.uba.ar"
+    try:
+        geolocator = Nominatim(user_agent = MAIL)
+        direccion = geolocator.reverse(coords)
+        dir_prov = direccion.raw
+        if 'city' in dir_prov['address']:
+            provincia = dir_prov['address']['city']
+        elif 'state' in dir_prov['address']:
+            provincia = dir_prov['address']['state']
+>>>>>>> MartíndelCastillo
         pais = dir_prov['address']['country']
     except:
         provincia = "-"
@@ -33,6 +51,7 @@ def verificar_ingreso_numerico(a_verificar,primer_valor,ultimo_valor):
     post: Devuelve un int
     """
     while type(a_verificar) != int or (type(a_verificar) == int and (a_verificar < primer_valor or a_verificar > ultimo_valor)):
+<<<<<<< HEAD
         if type(a_verificar) != int:
             try:
                 a_verificar = int(a_verificar)
@@ -146,6 +165,18 @@ def alertas_actuales_por_usuario(opcion, zona_ingresada="cfk"):
     
 def suma_colores(im,CIUDAD):
     """ Determina la cantidad de pixeles del mismo color en un rango determinado
+=======
+        if not a_verificar.isnumeric():
+            a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+        else:
+            a_verificar = int(a_verificar)
+            if a_verificar < primer_valor or a_verificar > ultimo_valor:
+                a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+    return a_verificar
+
+def suma_colores(im,CIUDAD):
+    """ Analiza la circunferencia con centro predefinido, determinando la cantidad total de pixeles, y el color de cada uno
+>>>>>>> MartíndelCastillo
     pre: Recibe un image class y una tupla con dos valores (coord x, coord y)
     post: Devuelve un diccionario, con claves total, rojos, amarillos y verdes
     """
@@ -174,29 +205,67 @@ def suma_colores(im,CIUDAD):
     return cuenta_colores
 
 def declarar_alerta(colores_contados):
+<<<<<<< HEAD
     """ Determino el tipo de alerta según el porcentaje de pixeles en un radio
     Tormenta fuerte con probabilidad de granizo: 0.6% pixeles rojos
     Tormenta moderada: 0.9% pixeles amarillos
+=======
+    """ Determino el tipo de alerta según el porcentaje de cada color respecto del total
+    Tormenta fuerte con probabilidad de granizo: 0.8% pixeles rojos
+    Tormenta moderada: 1.2% pixeles amarillos
+>>>>>>> MartíndelCastillo
     Tormenta débil: 7% pixeles verdes
     
     pre: Recibe un diccionario con claves total, rojos, amarillos y verdes
     post: Devuelve un string
     """
+<<<<<<< HEAD
     if int(colores_contados["rojos"]*100/0.6) >= colores_contados["total"]:
         return "Tormenta fuerte con probabilidad de granizo"
     elif int(colores_contados["amarillos"]*100/0.9) >= colores_contados["total"]:
         return "Alerta: Tormenta moderada"
     elif int(colores_contados["verdes"]*100/7) >= colores_contados["total"]:
+=======
+    PORCENTAJE_TORMENTA_F = 0.8/100
+    PORCENTAJE_TORMENTA_M = 1.2/100
+    PORCENTAJE_TORMENTA_D = 7.0/100
+    if colores_contados["rojos"] >= (colores_contados["total"]*PORCENTAJE_TORMENTA_F):
+        return "Tormenta fuerte con probabilidad de granizo"
+    elif colores_contados["amarillos"] >= (colores_contados["total"]*PORCENTAJE_TORMENTA_M):
+        return "Alerta: Tormenta moderada"
+    elif colores_contados["verdes"] >= (colores_contados["total"]*PORCENTAJE_TORMENTA_D):
+>>>>>>> MartíndelCastillo
         return "Alerta: Tormenta débil"
     return "Sin alerta proxima"
     
 def analisis_imagen():
+<<<<<<< HEAD
+=======
+    """ Carga la imagen elegida por el usuario y analiza el estado de alerta de cada ciudad que se localiza en esta 
+    """
+    CENTRO_NEUQUEN = (238,441)
+    CENTRO_SANTA_ROSA = (358,342)
+    CENTRO_CORDOBA = (360,129)
+    CENTRO_BAHIA_BLANCA = (423,428)
+    CENTRO_PERGAMINO = (484,232)
+    CENTRO_PARANA = (488,144)
+    CENTRO_CABA = (555,264)
+    CENTRO_MAR_DEL_PLATA = (575,404)
+    CENTRO_MERCEDES = (579,42)
+    CENTRO_LA_PLATA = (571,279)
+    CENTRO_PARANA = (488,144)
+    
+>>>>>>> MartíndelCastillo
     imagen_electa = input("\nEscriba ubicación/nombre (sin formato) de la imagen .png a analizar (0 si desea usar una imagen predeterminada): ")
     imagen_electa = imagen_electa + ".png"
     try:
         im = Image.open(imagen_electa)
         im = im.convert("RGB")
+<<<<<<< HEAD
         CIUDADES = {"Neuquén":(238,441),"Santa Rosa":(358,342),"Córdoba":(360,129),"Bahia Blanca":(423,428),"Pergamino":(484,232),"Parana":(488,144),"C.A.B.A.":(555,264),"Mar del Plata":(575,404),"Mercedes":(579,42),"La Plata":(571,279),"Paraná":(488,144)}
+=======
+        CIUDADES = {"Neuquén":CENTRO_NEUQUEN,"Santa Rosa":CENTRO_SANTA_ROSA,"Córdoba":CENTRO_CORDOBA,"Bahia Blanca":CENTRO_BAHIA_BLANCA,"Pergamino":CENTRO_PERGAMINO,"Parana":CENTRO_PARANA,"C.A.B.A.":CENTRO_CABA,"Mar del Plata":CENTRO_MAR_DEL_PLATA,"Mercedes":CENTRO_MERCEDES,"La Plata":CENTRO_LA_PLATA,"Paraná":CENTRO_PARANA}
+>>>>>>> MartíndelCastillo
         for i in CIUDADES:
             colores_contados = suma_colores(im,CIUDADES[i])
             alerta = declarar_alerta(colores_contados)
@@ -206,6 +275,7 @@ def analisis_imagen():
             print("La imagen predeterminada", imagen_electa, "fue eliminada o no se descargo correcramente")
         else:
             print("No existe imagen", imagen_electa, "con el formato correspondiente en la misma carpeta que el archivo .py")
+<<<<<<< HEAD
 
 def cargar_archivo(lista_clima):
     """
@@ -480,3 +550,5 @@ def main():
         elif opc == 5:
             analisis_imagen()
 main()
+=======
+>>>>>>> MartíndelCastillo
