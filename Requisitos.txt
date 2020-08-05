@@ -1,0 +1,6 @@
+request 2.24.0
+pillow 7.2.0
+csv 1.0
+matplotlib 3.2.2
+datetime 4.3
+geopy 2.0.0
