@@ -330,7 +330,7 @@ def grafico(años,diccionario_clima, indice_columna, colores, titulo):
     plt.title("Promedio de " + titulo + " de los últimos cinco años.")
     plt.bar(años, height=promedios, color=colores)
     plt.show()
-
+    
 def datos_maximos(años,diccionario_clima,indice_columna):  
     """
     PRE-CONDICION: recibe la lista con la posicion de la columna, lista de los años y el diccionario.
@@ -345,23 +345,27 @@ def datos_maximos(años,diccionario_clima,indice_columna):
     return maximo
 
 def informacion_archivo():
+    """
+    Crea dos graficos con el promedio de temperatura y humedad respectivamente. Determina la temperatura y precipitacion maxima
+    """
     lista_clima = cargar_archivo()
     años = define_años(lista_clima)
     diccionario_clima = diccionario_años(lista_clima, años)
     columna_precip = ubicacion_columna(lista_clima, "Precipitation")
     columna_temp = ubicacion_columna(lista_clima, "Temperature")
+    columna_humedad = ubicacion_columna(lista_clima, "Humidity")
     colores_1 = ["midnightblue","royalblue","lightsteelblue","cornflowerblue", "slategrey"]
     colores_2= ["orangered","maroon","darkorange","gold", "brown"]
     opcion = 0
     print("----Carga de archivo exitosa----")
     
     while opcion != 4:
-        opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de precipitacion. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
+        opcion = input("\nMenú de información: \n1.Promedio de temperatura. \n2.Promedio de humedad. \n3.Milímetros y temperatura máxima. \n4.Volver al menú principal. \nOpción: ")
         opcion = verificar_ingreso_numerico(opcion,1,4)
         if opcion == 1:
             grafico(años,diccionario_clima,columna_temp, colores_2, "Temperaturas")
         elif opcion == 2:
-            grafico(años,diccionario_clima, columna_precip, colores_1, "Precipitaciones")
+            grafico(años,diccionario_clima, columna_humedad, colores_1, "Humedad")
         elif opcion == 3:
             print(f"La cantidad de milímetros maximos registrada en los últimos cinco años fue de {datos_maximos(años, diccionario_clima,columna_precip): .1f} ml")
             print(f"La máxima temperatura registrada en los últimos cinco años fue de {datos_maximos(años,diccionario_clima,columna_temp): .1f}ºC")
