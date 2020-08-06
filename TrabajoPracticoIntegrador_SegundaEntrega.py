@@ -234,7 +234,7 @@ def cargar_archivo():
     while opc != 'SI' and opc != 'NO':
         opc = input("Respuesta inválida. Reingrese su respuesta: ").upper()
     if opc == 'SI':
-        nombre_archivo = input("Ingrese el nombre del archivo csv que desea ingresar: ")
+        nombre_archivo = input("Ingrese el nombre (sin formato) del archivo csv que desea ingresar: ")
         nombre_archivo = nombre_archivo + ".csv"
         while nombre_archivo == '':
             nombre_archivo = input("No ingresó ningun nombre. Reingrese: ")
@@ -391,7 +391,7 @@ def main():
             try:
                 informacion_archivo()
             except:
-                print("\n")
+                print("Error de carga de archivo")
         elif opc == 4:
             try:
                 pronostico_extendido()
