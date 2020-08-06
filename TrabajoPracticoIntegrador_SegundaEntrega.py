@@ -34,11 +34,11 @@ def verificar_ingreso_numerico(a_verificar,primer_valor,ultimo_valor):
     """
     while type(a_verificar) != int or (type(a_verificar) == int and (a_verificar < primer_valor or a_verificar > ultimo_valor)):
         if not a_verificar.isnumeric():
-            a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+            a_verificar = input(f"Ingreso una opción inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
         else:
             a_verificar = int(a_verificar)
             if a_verificar < primer_valor or a_verificar > ultimo_valor:
-                a_verificar = input(f"Ingreso una opcion inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
+                a_verificar = input(f"Ingreso una opción inválida, ingrese un entero entre {primer_valor}  y {ultimo_valor}: ")
     return a_verificar
 
 def mostrar_pronostico (datos, provincia, ciudad):
@@ -124,7 +124,7 @@ def ingreso_ubicacion_por_usuario():
     
 def alertas_actuales_por_usuario(opcion, zona_ingresada="cfk"):
     """ Determina las alertas cercanas o en la provincia ingresada por el usuario
-    PRE: recibe la opcion si necesita que ingrese la zona o no
+    PRE: recibe la opción si necesita que ingrese la zona o no
     """
     alerta_actual= requests.get('https://ws.smn.gob.ar/alerts/type/AL')
     datos = alerta_actual.json()
