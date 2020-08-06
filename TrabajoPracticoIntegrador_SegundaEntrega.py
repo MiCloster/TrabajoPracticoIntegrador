@@ -396,3 +396,4 @@ def main():
         elif opc == 5:
             analisis_imagen()
 main()
+              
